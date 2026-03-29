@@ -78,26 +78,43 @@ export function Window({
     [maximized, pos]
   );
 
-  const onResizeStart = useCallback(
-    (e: React.PointerEvent) => {
+  const onEdgeResize = useCallback(
+    (e: React.PointerEvent, edges: { top?: boolean; bottom?: boolean; left?: boolean; right?: boolean }) => {
       e.preventDefault();
       e.stopPropagation();
-      resizeStart.current = { mx: e.clientX, my: e.clientY, w: size.w, h: size.h };
+      const start = { mx: e.clientX, my: e.clientY, w: size.w, h: size.h, x: pos.x, y: pos.y };
       const el = (e.target as HTMLElement).closest("[data-window]") as HTMLElement;
       const onMove = (ev: PointerEvent) => {
         if (!el) return;
-        el.style.width = `${Math.max(520, resizeStart.current.w + (ev.clientX - resizeStart.current.mx))}px`;
-        el.style.height = `${Math.max(380, resizeStart.current.h + (ev.clientY - resizeStart.current.my))}px`;
+        const dx = ev.clientX - start.mx;
+        const dy = ev.clientY - start.my;
+        let newW = start.w, newH = start.h, newX = start.x, newY = start.y;
+        if (edges.right) newW = Math.max(520, start.w + dx);
+        if (edges.bottom) newH = Math.max(380, start.h + dy);
+        if (edges.left) { newW = Math.max(520, start.w - dx); newX = start.x + start.w - newW; }
+        if (edges.top) { newH = Math.max(380, start.h - dy); newY = Math.max(MENUBAR_H, start.y + start.h - newH); }
+        el.style.width = `${newW}px`;
+        el.style.height = `${newH}px`;
+        el.style.left = `${newX}px`;
+        el.style.top = `${newY}px`;
       };
       const onUp = (ev: PointerEvent) => {
-        setSize({ w: Math.max(520, resizeStart.current.w + (ev.clientX - resizeStart.current.mx)), h: Math.max(380, resizeStart.current.h + (ev.clientY - resizeStart.current.my)) });
+        const dx = ev.clientX - start.mx;
+        const dy = ev.clientY - start.my;
+        let newW = start.w, newH = start.h, newX = start.x, newY = start.y;
+        if (edges.right) newW = Math.max(520, start.w + dx);
+        if (edges.bottom) newH = Math.max(380, start.h + dy);
+        if (edges.left) { newW = Math.max(520, start.w - dx); newX = start.x + start.w - newW; }
+        if (edges.top) { newH = Math.max(380, start.h - dy); newY = Math.max(MENUBAR_H, start.y + start.h - newH); }
+        setSize({ w: newW, h: newH });
+        setPos({ x: newX, y: newY });
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("pointerup", onUp);
       };
       window.addEventListener("pointermove", onMove);
       window.addEventListener("pointerup", onUp);
     },
-    [size]
+    [size, pos]
   );
 
   const toggleMaximize = () => {
@@ -166,9 +183,16 @@ export function Window({
 
       <div className="flex-1 overflow-hidden bg-[#1e1e2e]">{children}</div>
 
-      {!maximized && !isMobile && (
-        <div className="absolute bottom-0 right-0 w-[8px] h-[8px] cursor-nwse-resize z-10" onPointerDown={onResizeStart} />
-      )}
+      {!maximized && !isMobile && <>
+        <div className="absolute top-0 left-[6px] right-[6px] h-[4px] cursor-ns-resize z-10" onPointerDown={(e) => onEdgeResize(e, { top: true })} />
+        <div className="absolute bottom-0 left-[6px] right-[6px] h-[4px] cursor-ns-resize z-10" onPointerDown={(e) => onEdgeResize(e, { bottom: true })} />
+        <div className="absolute left-0 top-[6px] bottom-[6px] w-[4px] cursor-ew-resize z-10" onPointerDown={(e) => onEdgeResize(e, { left: true })} />
+        <div className="absolute right-0 top-[6px] bottom-[6px] w-[4px] cursor-ew-resize z-10" onPointerDown={(e) => onEdgeResize(e, { right: true })} />
+        <div className="absolute top-0 left-0 w-[6px] h-[6px] cursor-nwse-resize z-10" onPointerDown={(e) => onEdgeResize(e, { top: true, left: true })} />
+        <div className="absolute top-0 right-0 w-[6px] h-[6px] cursor-nesw-resize z-10" onPointerDown={(e) => onEdgeResize(e, { top: true, right: true })} />
+        <div className="absolute bottom-0 left-0 w-[6px] h-[6px] cursor-nesw-resize z-10" onPointerDown={(e) => onEdgeResize(e, { bottom: true, left: true })} />
+        <div className="absolute bottom-0 right-0 w-[6px] h-[6px] cursor-nwse-resize z-10" onPointerDown={(e) => onEdgeResize(e, { bottom: true, right: true })} />
+      </>}
     </motion.div>
   );
 }

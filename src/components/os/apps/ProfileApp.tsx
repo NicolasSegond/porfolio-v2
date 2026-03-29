@@ -75,34 +75,47 @@ export function ProfileApp() {
           </div>
         </div>
 
+        {compact && (
+          <div className="flex gap-1 px-4 py-2 bg-[#1e1e2e] border-b border-white/[0.06] shrink-0">
+            {[
+              { id: "profil", label: "À propos" },
+              { id: "skills", label: "Compétences" },
+              { id: "stats", label: "Statistiques" },
+            ].map((t) => (
+              <button key={t.id} onClick={() => setTab(t.id)} className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all ${tab === t.id ? "bg-[#3B82F6]/20 text-white" : "text-white/40"}`}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Content */}
         <div className="flex-1 overflow-y-auto win-scroll p-6 bg-[#1e1e2e]">
           {tab === "profil" && (
             <>
               {/* Card profil style Finder preview */}
-              <div className="bg-[#232338] rounded-2xl border border-white/[0.06] p-6 mb-6 flex items-center gap-6">
+              <div className="bg-[#232338] rounded-2xl border border-white/[0.06] p-6 mb-6 flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6">
                 <div className="relative shrink-0">
                   <div className="absolute -inset-1.5 bg-gradient-to-br from-[#7C3AED] via-[#EC4899] to-[#EA580C] rounded-full blur-md opacity-30" />
-                  <Image src={personalInfo.photo} alt={personalInfo.name} width={96} height={96} className="relative rounded-full w-24 h-24 object-cover border-2 border-white/10" />
+                  <Image src={personalInfo.photo} alt={personalInfo.name} width={96} height={96} className="relative rounded-full w-20 h-20 sm:w-24 sm:h-24 object-cover border-2 border-white/10" />
                 </div>
-                <div className="min-w-0">
-                  <h1 className="text-3xl font-black tracking-tight text-white">{personalInfo.name}</h1>
-                  <p className="text-white/40 font-medium text-lg">{personalInfo.title}</p>
-                  <div className="flex items-center gap-3 mt-2 flex-wrap">
-                    <span className="text-[12px] text-[#22C55E] font-semibold">● Disponible septembre 2026</span>
-                    <span className="text-white/15">|</span>
-                    <span className="text-[12px] text-white/30">Bac+5 MAALSI @ CESI</span>
-                    <span className="text-white/15">|</span>
-                    <a href={`mailto:${personalInfo.email}`} className="text-[12px] text-[#60A5FA] hover:text-[#93C5FD] transition-colors">{personalInfo.email}</a>
+                <div className="min-w-0 text-center sm:text-left">
+                  <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">{personalInfo.name}</h1>
+                  <p className="text-white/40 font-medium text-base sm:text-lg">{personalInfo.title}</p>
+                  <div className="flex items-center gap-2 sm:gap-3 mt-2 flex-wrap justify-center sm:justify-start">
+                    <span className="text-[11px] sm:text-[12px] text-[#22C55E] font-semibold">● Disponible septembre 2026</span>
+                    <span className="text-white/15 hidden sm:inline">|</span>
+                    <span className="text-[11px] sm:text-[12px] text-white/30">Bac+5 MAALSI @ CESI</span>
                   </div>
-                  <div className="flex items-center gap-2 mt-3">
-                    <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="px-3 py-1 rounded-md bg-white/[0.06] border border-white/[0.06] text-white/60 text-[11px] font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-1.5">
+                  <a href={`mailto:${personalInfo.email}`} className="text-[11px] sm:text-[12px] text-[#60A5FA] hover:text-[#93C5FD] transition-colors mt-1 inline-block">{personalInfo.email}</a>
+                  <div className="flex items-center gap-2 mt-3 flex-wrap justify-center sm:justify-start">
+                    <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 sm:py-1 rounded-md bg-white/[0.06] border border-white/[0.06] text-white/60 text-[11px] font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-1.5">
                       <GitHubIcon size={12} /> GitHub
                     </a>
-                    <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="px-3 py-1 rounded-md bg-white/[0.06] border border-white/[0.06] text-white/60 text-[11px] font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-1.5">
+                    <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 sm:py-1 rounded-md bg-white/[0.06] border border-white/[0.06] text-white/60 text-[11px] font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-1.5">
                       <LinkedInIcon size={12} /> LinkedIn
                     </a>
-                    <a href="/CV.pdf" className="px-3 py-1 rounded-md bg-[#3B82F6]/20 border border-[#3B82F6]/20 text-[#60A5FA] text-[11px] font-medium hover:bg-[#3B82F6]/30 transition-all">
+                    <a href="/CV.pdf" className="px-3 py-1.5 sm:py-1 rounded-md bg-[#3B82F6]/20 border border-[#3B82F6]/20 text-[#60A5FA] text-[11px] font-medium hover:bg-[#3B82F6]/30 transition-all">
                       Télécharger CV
                     </a>
                   </div>
