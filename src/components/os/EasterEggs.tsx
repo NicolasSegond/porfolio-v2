@@ -124,7 +124,7 @@ function AboutThisMac({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="px-6 pb-4 text-center">
-          <p className="text-[10px] text-white/15">™ et © 2026 Nicolas Segond. Tous droits réservés.</p>
+          <p className="text-[10px] text-white/15">™ et © {new Date().getFullYear()} Nicolas Segond. Tous droits réservés.</p>
           <p className="text-[10px] text-white/10 mt-0.5">↑↑↓↓←→←→BA pour un secret...</p>
         </div>
       </motion.div>

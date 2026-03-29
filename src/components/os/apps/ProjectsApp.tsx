@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { Lock, Plus, CheckCircle2, ChevronLeft, ChevronRight, RotateCw, Globe, ExternalLink, Code2, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { projects, projectCategories } from "@/data/portfolio";
@@ -18,7 +18,7 @@ export function ProjectsApp() {
   const [page, setPage] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
 
-  const filtered = filter === "all" ? projects : projects.filter((p) => p.category === filter);
+  const filtered = useMemo(() => filter === "all" ? projects : projects.filter((p) => p.category === filter), [filter]);
   const rest = filtered.slice(1); // first one is featured
   const totalPages = Math.ceil(rest.length / ITEMS_PER_PAGE);
   const pageItems = rest.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
@@ -71,9 +71,12 @@ export function ProjectsApp() {
                 <div className="flex flex-wrap gap-2 mb-3">
                   {selected.tech.map((t, i) => (<span key={t} className={`text-[11px] font-bold px-3 py-1 rounded-full ${tagColors[i % tagColors.length]}`}>{t}</span>))}
                 </div>
-                <p className="text-[11px] font-bold text-[#7C3AED] uppercase tracking-widest mb-1">{selected.subtitle}</p>
+                <div className="flex items-center gap-3 mb-1">
+                  <p className="text-[11px] font-bold text-[#7C3AED] uppercase tracking-widest">{selected.subtitle}</p>
+                  <span className="text-[11px] font-semibold text-white/25">{selected.year}</span>
+                </div>
                 <h1 className="text-3xl font-black tracking-tight text-white mb-2">{selected.title}</h1>
-                <p className="text-white/40 text-[15px] leading-relaxed mb-4">{selected.description}</p>
+                <p className="text-white/50 text-[15px] leading-relaxed mb-4">{selected.description}</p>
                 <div className="flex gap-2 mb-8">
                   {selected.repo && (<a href={selected.repo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.08] text-[12px] font-semibold text-white/60 hover:text-white hover:bg-white/[0.1] transition-all"><Code2 size={14} /> Code source</a>)}
                   {selected.demo && (<a href={selected.demo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#7C3AED]/15 border border-[#7C3AED]/20 text-[12px] font-semibold text-[#7C3AED] hover:bg-[#7C3AED]/25 transition-all"><Globe size={14} /> Voir le site</a>)}
@@ -82,7 +85,7 @@ export function ProjectsApp() {
                 <div className="grid md:grid-cols-2 gap-3 mb-4">
                   <div className="bg-white/[0.04] rounded-2xl border border-white/[0.06] p-5">
                     <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/25 mb-3">📋 Contexte</p>
-                    <p className="text-white/50 text-[13px] leading-relaxed">{selected.details.context}</p>
+                    <p className="text-white/60 text-[13px] leading-relaxed">{selected.details.context}</p>
                   </div>
                   <div className="bg-[#7C3AED]/8 rounded-2xl border border-[#7C3AED]/15 p-5">
                     <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#7C3AED]/70 mb-3">👨‍💻 Mon rôle</p>
@@ -95,7 +98,7 @@ export function ProjectsApp() {
                     {selected.details.features.map((f, i) => (
                       <div key={i} className="flex items-start gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/[0.04]">
                         <CheckCircle2 size={14} className="text-[#22C55E] mt-0.5 shrink-0" />
-                        <span className="text-white/45 text-[12px] leading-relaxed">{f}</span>
+                        <span className="text-white/55 text-[13px] leading-relaxed">{f}</span>
                       </div>
                     ))}
                   </div>
@@ -115,7 +118,7 @@ export function ProjectsApp() {
                     <div className="absolute bottom-0 left-0 p-8 max-w-md">
                       <p className="text-[10px] font-bold text-[#7C3AED] uppercase tracking-[0.2em] mb-2">Projet à la une</p>
                       <h2 className="text-2xl font-black text-white tracking-tight leading-tight mb-2">{filtered[0].title}</h2>
-                      <p className="text-white/30 text-[13px] leading-relaxed line-clamp-2 mb-3">{filtered[0].description}</p>
+                      <p className="text-white/50 text-[13px] leading-relaxed line-clamp-2 mb-3">{filtered[0].description}</p>
                       <div className="flex gap-1.5">
                         {filtered[0].tech.slice(0, 4).map((t, i) => (<span key={t} className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${tagColors[i % tagColors.length]}`}>{t}</span>))}
                       </div>
@@ -177,13 +180,16 @@ export function ProjectsApp() {
                             </div>
                           </div>
                           <div className="p-4">
-                            <h3 className="text-[14px] font-bold text-white/90 group-hover:text-[#7C3AED] transition-colors mb-1 truncate">{p.title}</h3>
-                            <p className="text-[11px] text-white/25 line-clamp-2 leading-relaxed mb-3">{p.description}</p>
+                            <div className="flex items-center justify-between mb-1">
+                              <h3 className="text-[14px] font-bold text-white/90 group-hover:text-[#7C3AED] transition-colors truncate">{p.title}</h3>
+                              <span className="text-[10px] text-white/20 font-medium shrink-0 ml-2">{p.year}</span>
+                            </div>
+                            <p className="text-[12px] text-white/40 line-clamp-2 leading-relaxed mb-3">{p.description}</p>
                             <div className="flex flex-wrap gap-1">
                               {p.tech.slice(0, 3).map((t, ti) => (
-                                <span key={t} className={`text-[9px] font-semibold px-2 py-0.5 rounded-md ${tagColors[ti % tagColors.length]}`}>{t}</span>
+                                <span key={t} className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${tagColors[ti % tagColors.length]}`}>{t}</span>
                               ))}
-                              {p.tech.length > 3 && <span className="text-[9px] font-semibold px-2 py-0.5 rounded-md bg-white/[0.04] text-white/20">+{p.tech.length - 3}</span>}
+                              {p.tech.length > 3 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-white/[0.04] text-white/30">+{p.tech.length - 3}</span>}
                             </div>
                           </div>
                         </button>

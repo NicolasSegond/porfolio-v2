@@ -193,17 +193,61 @@ function PreviewIcon() {
   );
 }
 
-const apps: { id: AppId | "cv"; icon: React.ReactNode; label: string }[] = [
-  { id: "profil", icon: <FinderIcon />, label: "Finder — Profil" },
-  { id: "projets", icon: <SafariIcon />, label: "Safari — Projets" },
-  { id: "contact", icon: <MessagesIcon />, label: "Messages — Contact" },
-  { id: "parcours", icon: <NotesIcon />, label: "Notes — Parcours" },
-  { id: "terminal", icon: <TerminalIcon />, label: "Terminal" },
-  { id: "certifs", icon: <PhotosIcon />, label: "Photos — Certifications" },
-  { id: "cv", icon: <PreviewIcon />, label: "Aperçu — Télécharger CV" },
+const apps: { id: AppId | "cv"; icon: React.ReactNode; label: string; shortLabel: string }[] = [
+  { id: "profil", icon: <FinderIcon />, label: "Finder — Profil", shortLabel: "Profil" },
+  { id: "projets", icon: <SafariIcon />, label: "Safari — Projets", shortLabel: "Projets" },
+  { id: "contact", icon: <MessagesIcon />, label: "Messages — Contact", shortLabel: "Contact" },
+  { id: "parcours", icon: <NotesIcon />, label: "Notes — Parcours", shortLabel: "Parcours" },
+  { id: "terminal", icon: <TerminalIcon />, label: "Terminal", shortLabel: "Terminal" },
+  { id: "certifs", icon: <PhotosIcon />, label: "Photos — Certifications", shortLabel: "Certifs" },
+  { id: "cv", icon: <PreviewIcon />, label: "Aperçu — Télécharger CV", shortLabel: "CV" },
 ];
 
-export function Dock({ openApps, onOpen }: { openApps: AppId[]; onOpen: (id: AppId) => void }) {
+export const MOBILE_TAB_BAR_H = 62;
+
+export function Dock({ openApps, onOpen, isMobile, activeApp }: { openApps: AppId[]; onOpen: (id: AppId) => void; isMobile?: boolean; activeApp?: AppId }) {
+  if (isMobile) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 z-[200] flex justify-center" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+        <div
+          className="flex items-end mx-2 mb-[6px]"
+          style={{
+            padding: "5px 8px",
+            gap: "2px",
+            background: "rgba(255,255,255,0.15)",
+            backdropFilter: "blur(50px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(50px) saturate(1.8)",
+            borderRadius: 18,
+            border: "0.5px solid rgba(255,255,255,0.25)",
+            boxShadow: "0 8px 40px rgba(0,0,0,0.25), inset 0 0.5px 0 rgba(255,255,255,0.2)",
+          }}
+        >
+          {apps.map((app) => {
+            const isActive = activeApp === app.id;
+            return (
+              <motion.button
+                key={app.id}
+                onClick={() => {
+                  if (app.id === "cv") { window.open("/CV.pdf", "_blank"); return; }
+                  onOpen(app.id as AppId);
+                }}
+                whileTap={{ scale: 0.85 }}
+                className="relative flex flex-col items-center"
+              >
+                <div className={`w-[40px] h-[40px] transition-opacity ${isActive ? "opacity-100" : "opacity-60"}`} style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.2))" }}>
+                  {app.icon}
+                </div>
+                {isActive && (
+                  <div className="w-[4px] h-[4px] rounded-full bg-white/50 mt-[2px]" />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ y: 80, opacity: 0 }}
@@ -240,7 +284,6 @@ export function Dock({ openApps, onOpen }: { openApps: AppId[]; onOpen: (id: App
               {app.icon}
             </div>
 
-            {/* Tooltip */}
             <div className="absolute -top-11 opacity-0 group-hover:opacity-100 transition-opacity duration-100 pointer-events-none">
               <div
                 className="text-white text-[12px] font-medium px-3 py-[5px] whitespace-nowrap"
@@ -256,7 +299,6 @@ export function Dock({ openApps, onOpen }: { openApps: AppId[]; onOpen: (id: App
               </div>
             </div>
 
-            {/* Running dot */}
             {openApps.includes(app.id as AppId) && (
               <div className="w-[4px] h-[4px] rounded-full bg-black/30 mt-[2px]" />
             )}

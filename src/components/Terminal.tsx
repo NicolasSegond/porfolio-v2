@@ -21,7 +21,7 @@ const lines = [
   { text: "Keycloak  Traefik  Prometheus  Grafana  Git", color: "text-term-cyan", delay: 60 },
   { text: "", color: "", delay: 200 },
   { text: "$ echo $STATUS", color: "text-term-green", delay: 300 },
-  { text: "Disponible 2026 — Ouvert aux opportunités", color: "text-term-pink", delay: 80 },
+  { text: "Disponible septembre 2026 — Ouvert aux opportunités", color: "text-term-pink", delay: 80 },
 ];
 
 export function Terminal() {

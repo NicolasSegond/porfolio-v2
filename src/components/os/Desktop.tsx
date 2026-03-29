@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { User, FolderGit2, Briefcase, Terminal, Award, Mail } from "lucide-react";
 import { MenuBar } from "./MenuBar";
@@ -33,19 +33,31 @@ const appConfig: Record<AppId, {
 
 export function Desktop() {
   const [windows, setWindows] = useState<WinState[]>([
-    { id: "terminal", zIndex: 1, minimized: false, maximized: false },
+    { id: "profil", zIndex: 1, minimized: false, maximized: false },
   ]);
   const [topZ, setTopZ] = useState(2);
   const [appleClicked, setAppleClicked] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const openApp = useCallback((id: AppId) => {
-    setWindows((prev) => {
-      const existing = prev.find((w) => w.id === id);
-      if (existing) return prev.map((w) => w.id === id ? { ...w, minimized: false, zIndex: topZ } : w);
-      return [...prev, { id, zIndex: topZ, minimized: false, maximized: false }];
-    });
+    if (isMobile) {
+      setWindows([{ id, zIndex: topZ, minimized: false, maximized: true }]);
+    } else {
+      setWindows((prev) => {
+        const existing = prev.find((w) => w.id === id);
+        if (existing) return prev.map((w) => w.id === id ? { ...w, minimized: false, zIndex: topZ } : w);
+        return [...prev, { id, zIndex: topZ, minimized: false, maximized: false }];
+      });
+    }
     setTopZ((z) => z + 1);
-  }, [topZ]);
+  }, [topZ, isMobile]);
 
   const focusApp = useCallback((id: AppId) => {
     setWindows((prev) => prev.map((w) => w.id === id ? { ...w, zIndex: topZ } : w));
@@ -66,6 +78,7 @@ export function Desktop() {
 
   const visibleApps = windows.filter((w) => !w.minimized);
   const anyMaximized = visibleApps.some((w) => w.maximized);
+  const activeApp = visibleApps.length > 0 ? visibleApps.reduce((a, b) => a.zIndex > b.zIndex ? a : b).id : undefined;
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
@@ -97,16 +110,19 @@ export function Desktop() {
         })}
       </AnimatePresence>
 
-      {/* Dock — hide when any window is maximized, show on hover bottom edge */}
-      <motion.div
-        initial={false}
-        animate={{ y: anyMaximized ? 100 : 0, opacity: anyMaximized ? 0 : 1 }}
-        whileHover={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="fixed bottom-0 left-0 right-0 h-[80px] flex items-end justify-center z-[200]"
-      >
-        <Dock openApps={visibleApps.map((w) => w.id)} onOpen={openApp} />
-      </motion.div>
+      {isMobile ? (
+        <Dock openApps={visibleApps.map((w) => w.id)} onOpen={openApp} isMobile activeApp={activeApp} />
+      ) : (
+        <motion.div
+          initial={false}
+          animate={{ y: anyMaximized ? 100 : 0, opacity: anyMaximized ? 0 : 1 }}
+          whileHover={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="fixed bottom-0 left-0 right-0 h-[80px] flex items-end justify-center z-[200]"
+        >
+          <Dock openApps={visibleApps.map((w) => w.id)} onOpen={openApp} />
+        </motion.div>
+      )}
     </div>
   );
 }

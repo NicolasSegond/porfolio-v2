@@ -42,11 +42,11 @@ export function MenuBar({ onAppleClick }: { onAppleClick?: () => void }) {
           </svg>
         </button>
         <span className="font-semibold" style={{ color: "rgba(0,0,0,0.88)" }}>Portfolio</span>
-        <span style={{ color: "rgba(0,0,0,0.55)" }}>Fichier</span>
-        <span style={{ color: "rgba(0,0,0,0.55)" }}>Édition</span>
-        <span style={{ color: "rgba(0,0,0,0.55)" }} className="hidden sm:inline">Présentation</span>
-        <span style={{ color: "rgba(0,0,0,0.55)" }}>Fenêtre</span>
-        <span style={{ color: "rgba(0,0,0,0.55)" }}>Aide</span>
+        <span style={{ color: "rgba(0,0,0,0.55)" }} className="hidden md:inline">Fichier</span>
+        <span style={{ color: "rgba(0,0,0,0.55)" }} className="hidden md:inline">Édition</span>
+        <span style={{ color: "rgba(0,0,0,0.55)" }} className="hidden lg:inline">Présentation</span>
+        <span style={{ color: "rgba(0,0,0,0.55)" }} className="hidden md:inline">Fenêtre</span>
+        <span style={{ color: "rgba(0,0,0,0.55)" }} className="hidden md:inline">Aide</span>
       </div>
       <div className="flex items-center gap-[12px]">
         <svg width="14" height="11" viewBox="0 0 16 12" fill="rgba(0,0,0,0.7)">

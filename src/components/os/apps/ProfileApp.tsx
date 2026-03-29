@@ -43,7 +43,7 @@ export function ProfileApp() {
               const El = isLink ? "a" : "button";
               const props = isLink ? { href: (item as {href: string}).href, target: "_blank", rel: "noopener noreferrer" } : { onClick: () => setTab(item.id) };
               return (
-                <El key={item.id} {...props as Record<string, string>} className={`w-full flex items-center gap-2 px-4 py-[5px] text-[12px] transition-all ${isActive ? "bg-[#3B82F6]/20 text-white font-medium" : "text-white/50 hover:bg-white/[0.04]"}`}>
+                <El key={item.id} {...(props as any)} className={`w-full flex items-center gap-2 px-4 py-[5px] text-[12px] transition-all ${isActive ? "bg-[#3B82F6]/20 text-white font-medium" : "text-white/50 hover:bg-white/[0.04]"}`}>
                   {item.icon}
                   <span className="truncate">{item.label}</span>
                 </El>
@@ -87,10 +87,12 @@ export function ProfileApp() {
                 <div className="min-w-0">
                   <h1 className="text-3xl font-black tracking-tight text-white">{personalInfo.name}</h1>
                   <p className="text-white/40 font-medium text-lg">{personalInfo.title}</p>
-                  <div className="flex items-center gap-3 mt-2">
-                    <span className="text-[12px] text-[#22C55E] font-semibold">● Disponible 2026</span>
+                  <div className="flex items-center gap-3 mt-2 flex-wrap">
+                    <span className="text-[12px] text-[#22C55E] font-semibold">● Disponible septembre 2026</span>
                     <span className="text-white/15">|</span>
                     <span className="text-[12px] text-white/30">Bac+5 MAALSI @ CESI</span>
+                    <span className="text-white/15">|</span>
+                    <a href={`mailto:${personalInfo.email}`} className="text-[12px] text-[#60A5FA] hover:text-[#93C5FD] transition-colors">{personalInfo.email}</a>
                   </div>
                   <div className="flex items-center gap-2 mt-3">
                     <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="px-3 py-1 rounded-md bg-white/[0.06] border border-white/[0.06] text-white/60 text-[11px] font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-1.5">
@@ -115,8 +117,8 @@ export function ProfileApp() {
                   { label: "Spécialités", value: "Dynamic Reports · Microservices · CI/CD · DevOps" },
                 ].map((row) => (
                   <div key={row.label} className="flex gap-4 px-4 py-3">
-                    <span className="text-[12px] text-white/25 font-medium w-24 shrink-0 text-right">{row.label}</span>
-                    <span className="text-[12px] text-white/60 leading-relaxed">{row.value}</span>
+                    <span className="text-[12px] text-white/40 font-medium w-24 shrink-0 text-right">{row.label}</span>
+                    <span className="text-[13px] text-white/60 leading-relaxed">{row.value}</span>
                   </div>
                 ))}
               </div>
@@ -144,7 +146,7 @@ export function ProfileApp() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3 mb-6">
                 {[
-                  { val: "10+", label: "Projets", icon: <Folder size={18} />, color: "text-[#7C3AED] bg-[#7C3AED]/10" },
+                  { val: "6", label: "Projets", icon: <Folder size={18} />, color: "text-[#7C3AED] bg-[#7C3AED]/10" },
                   { val: "30+", label: "Technologies", icon: <Code size={18} />, color: "text-[#E11D48] bg-[#E11D48]/10" },
                   { val: "3 ans", label: "Expérience", icon: <Clock size={18} />, color: "text-[#EA580C] bg-[#EA580C]/10" },
                   { val: "4", label: "Certifications", icon: <Star size={18} />, color: "text-[#059669] bg-[#059669]/10" },
@@ -156,22 +158,6 @@ export function ProfileApp() {
                   </div>
                 ))}
               </div>
-              {[
-                { label: "Projets réalisés", val: 85, color: "bg-[#7C3AED]" },
-                { label: "Technologies", val: 100, color: "bg-[#E11D48]" },
-                { label: "Expérience", val: 60, color: "bg-[#EA580C]" },
-                { label: "Certifications", val: 40, color: "bg-[#059669]" },
-              ].map((s) => (
-                <div key={s.label} className="bg-white/[0.03] rounded-xl border border-white/[0.06] p-4">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-[12px] text-white/50">{s.label}</span>
-                    <span className="text-[12px] font-bold text-white">{s.val}%</span>
-                  </div>
-                  <div className="h-[6px] bg-white/[0.06] rounded-full overflow-hidden">
-                    <div className={`h-full ${s.color} rounded-full transition-all duration-1000`} style={{ width: `${s.val}%` }} />
-                  </div>
-                </div>
-              ))}
             </div>
           )}
         </div>
