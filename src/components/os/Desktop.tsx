@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { User, FolderGit2, Briefcase, Terminal, Award, Mail } from "lucide-react";
 import { MenuBar } from "./MenuBar";
 import { Dock, type AppId } from "./Dock";
 import { EasterEggs } from "./EasterEggs";
 import { Window } from "./Window";
+import { Notification } from "./Notification";
 import { ProfileApp } from "./apps/ProfileApp";
 import { TerminalApp } from "./apps/TerminalApp";
 import { ProjectsApp } from "./apps/ProjectsApp";
@@ -76,16 +77,37 @@ export function Desktop() {
     setWindows((prev) => prev.map((w) => w.id === id ? { ...w, maximized: max } : w));
   }, []);
 
+  const appOrder: AppId[] = ["profil", "projets", "contact", "parcours", "terminal", "certifs"];
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!touchStart.current || !isMobile) return;
+    const dx = e.changedTouches[0].clientX - touchStart.current.x;
+    const dy = e.changedTouches[0].clientY - touchStart.current.y;
+    touchStart.current = null;
+    if (Math.abs(dx) < 80 || Math.abs(dy) > Math.abs(dx)) return;
+    const current = windows[0]?.id;
+    if (!current) return;
+    const idx = appOrder.indexOf(current);
+    const next = dx < 0 ? appOrder[(idx + 1) % appOrder.length] : appOrder[(idx - 1 + appOrder.length) % appOrder.length];
+    openApp(next);
+  }, [isMobile, windows, openApp]);
+
   const visibleApps = windows.filter((w) => !w.minimized);
   const anyMaximized = visibleApps.some((w) => w.maximized);
   const activeApp = visibleApps.length > 0 ? visibleApps.reduce((a, b) => a.zIndex > b.zIndex ? a : b).id : undefined;
 
   return (
-    <div className="h-screen w-screen overflow-hidden relative">
+    <div className="h-screen w-screen overflow-hidden relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/wallpaper.jpg')" }} />
 
       <MenuBar onAppleClick={() => setAppleClicked((p) => !p)} />
       <EasterEggs onAppleClick={appleClicked} />
+      <Notification />
 
       <AnimatePresence>
         {visibleApps.map((w) => {

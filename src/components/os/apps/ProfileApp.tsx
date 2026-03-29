@@ -6,6 +6,7 @@ import { personalInfo, skills } from "@/data/portfolio";
 import { useContainerWidth } from "@/components/os/useContainerWidth";
 import { GitHubIcon, LinkedInIcon } from "@/components/icons";
 import { ChevronRight, Clock, Folder, Star, Tag, HardDrive, User, Code, BarChart3 } from "lucide-react";
+import { GitHubStats } from "@/components/os/GitHubStats";
 
 const catColors: Record<string, string> = {
   Languages: "bg-[#7C3AED]/15 text-[#7C3AED]", Frontend: "bg-[#E11D48]/15 text-[#E11D48]",
@@ -158,6 +159,7 @@ export function ProfileApp() {
                   </div>
                 ))}
               </div>
+              <GitHubStats />
             </div>
           )}
         </div>

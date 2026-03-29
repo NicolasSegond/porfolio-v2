@@ -121,10 +121,10 @@ export function Window({
   return (
     <motion.div
       data-window={id}
-      initial={{ opacity: 0, scale: 0.92 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.12 } }}
-      transition={{ type: "spring", damping: 32, stiffness: 400, mass: 0.5 }}
+      initial={{ opacity: 0, scale: 0.5, y: 200 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.5, y: 200, transition: { duration: 0.2, ease: "easeIn" } }}
+      transition={{ type: "spring", damping: 28, stiffness: 300, mass: 0.6 }}
       style={{ ...style, filter: "drop-shadow(0 25px 45px rgba(0,0,0,0.40)) drop-shadow(0 0 2px rgba(0,0,0,0.50))" }}
       className="flex flex-col overflow-hidden"
       onPointerDown={() => { onFocus(); setFocused(true); }}
