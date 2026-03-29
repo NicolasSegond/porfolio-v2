@@ -4,7 +4,7 @@ export const personalInfo = {
   bio: "Je build des apps de A à Z — du design system au pipeline Kubernetes. 3 ans d'alternance en conditions réelles, un mastère en poche, et une obsession pour le code propre et les archis scalables.",
   email: "contact@nicolassegond.fr",
   linkedin: "https://www.linkedin.com/in/nicolassegond/",
-  github: "https://github.com/TurboNicoo",
+  github: "https://github.com/NicolasSegond",
   photo: "/photo1.webp",
 };
 
@@ -73,6 +73,56 @@ export const timeline = [
 
 export const projects = [
   {
+    slug: "microservice-collection",
+    title: "MicroService Collection",
+    subtitle: "Plateforme marketplace microservices",
+    category: "etude",
+    description: "POC d'une plateforme marketplace moderne construite avec une architecture microservices event-driven. Communication asynchrone via Kafka, authentification OAuth2/OIDC avec Keycloak, déploiement Kubernetes.",
+    tech: ["Symfony", "React", "Kafka", "Keycloak", "Kubernetes", "Docker"],
+    image: "/projects/microservice-collection.webp",
+    repo: "https://github.com/NicolasSegond/MicroService_Collection",
+    demo: "",
+    details: {
+      context: "Projet réalisé dans le cadre du Mastère MAALSI au CESI. Conception d'une marketplace avec des services découplés communiquant de manière asynchrone via Apache Kafka, chacun disposant de sa propre base PostgreSQL.",
+      features: [
+        "Architecture event-driven avec Apache Kafka (aucun appel direct entre services)",
+        "Authentification OAuth2/OIDC via Keycloak avec introspection JWT (Ory Oathkeeper)",
+        "API Gateway Traefik avec routage et validation des tokens",
+        "API REST sécurisée avec API Platform (rôles, ownership)",
+        "Monitoring complet : Prometheus, Grafana, AlertManager",
+        "CI/CD GitHub Actions : tests, SonarCloud, OWASP ZAP, JMeter",
+        "Déploiement Kubernetes via Kustomize (Minikube)",
+        "Synchronisation temps réel des utilisateurs Keycloak → Kafka → services",
+      ],
+      role: "Développeur fullstack & DevOps — conception de l'architecture microservices, développement du backend Symfony/API Platform, frontend React, mise en place de l'infra Kubernetes, CI/CD et monitoring.",
+    },
+  },
+  {
+    slug: "ressources-relationnelles",
+    title: "Ressources Relationnelles",
+    subtitle: "Plateforme de partage de ressources",
+    category: "etude",
+    description: "Plateforme fullstack de partage de ressources relationnelles avec API PHP, application web React et application mobile Flutter, le tout orchestré avec Docker.",
+    tech: ["PHP", "React", "Flutter", "Docker", "MySQL"],
+    image: "/projects/ressources-relationnelles.webp",
+    repo: "https://github.com/NicolasSegond/CESI_Ressource_Relationnel",
+    demo: "",
+    details: {
+      context: "Projet réalisé dans le cadre du Bachelor CDA au CESI. Développement d'une plateforme complète de partage de ressources relationnelles, avec une API backend, un front web et une app mobile.",
+      features: [
+        "Authentification sécurisée avec tokens et refresh tokens",
+        "Ajout et consultation de ressources (web + mobile)",
+        "Système de favoris et sauvegarde de ressources",
+        "Commentaires et pièces jointes sur les ressources",
+        "Dashboard administrateur avec statistiques",
+        "Notifications email à l'inscription",
+        "Application mobile Flutter avec synchronisation API",
+        "Déploiement Docker (API + front sur réseau bridge)",
+      ],
+      role: "Développeur fullstack — développement de l'API PHP, de l'application web React et de l'application mobile Flutter.",
+    },
+  },
+  {
     slug: "gsb-extranet",
     title: "GSB Extranet",
     subtitle: "Application web de gestion de frais",
@@ -83,7 +133,7 @@ export const projects = [
     repo: "",
     demo: "",
     details: {
-      context: "Projet réalisé dans le cadre du BTS SIO SLAM. Simulation d'un cas réel de gestion de frais pour un laboratoire pharmaceutique.",
+      context: "Projet réalisé durant le BTS SIO SLAM. Simulation d'un cas réel de gestion de frais pour un laboratoire pharmaceutique.",
       features: [
         "Authentification sécurisée avec gestion de rôles (visiteur, comptable)",
         "CRUD complet des fiches de frais avec workflow d'états (créée, clôturée, validée, remboursée)",
@@ -104,7 +154,7 @@ export const projects = [
     repo: "",
     demo: "",
     details: {
-      context: "Extension mobile du projet GSB, développée en BTS SIO SLAM pour permettre la saisie de frais en mobilité.",
+      context: "Extension mobile du projet GSB, développée durant le BTS SIO SLAM pour permettre la saisie de frais en mobilité.",
       features: [
         "Saisie de frais en déplacement avec interface Material Design",
         "Synchronisation avec l'API REST du serveur",
@@ -125,7 +175,7 @@ export const projects = [
     repo: "",
     demo: "",
     details: {
-      context: "Application desktop développée en BTS SIO pour la gestion interne du laboratoire GSB.",
+      context: "Application desktop développée durant le BTS SIO SLAM pour la gestion interne du laboratoire GSB.",
       features: [
         "Gestion des visiteurs médicaux et de leurs secteurs",
         "Saisie et consultation des comptes-rendus de visite",
@@ -158,129 +208,6 @@ export const projects = [
       role: "Développeur fullstack — tout le projet de A à Z.",
     },
   },
-  {
-    slug: "les-petites-graines-pro",
-    title: "Les Petites Graines Pro",
-    subtitle: "Site vitrine professionnel",
-    category: "stage",
-    description: "Site vitrine pour une entreprise de produits biologiques destiné aux professionnels. Design épuré, catalogue, RGPD.",
-    tech: ["WordPress", "Divi", "CSS", "PHP"],
-    image: "/projects/photo-LPG.webp",
-    repo: "",
-    demo: "",
-    details: {
-      context: "Réalisé lors du stage chez Diggit-All pour un client du secteur bio.",
-      features: [
-        "Design responsive professionnel",
-        "Catalogue produits avec filtres",
-        "Formulaire de contact avancé",
-        "Conformité RGPD",
-      ],
-      role: "Développeur web — intégration complète sous WordPress/Divi, CSS custom.",
-    },
-  },
-  {
-    slug: "les-petites-graines",
-    title: "Les Petites Graines",
-    subtitle: "Site e-commerce",
-    category: "stage",
-    description: "Boutique en ligne pour la vente de produits biologiques aux particuliers. Catalogue avec filtres, panier, paiement en ligne.",
-    tech: ["WordPress", "WooCommerce", "Divi", "CSS"],
-    image: "/projects/lespetitesgraines.webp",
-    repo: "",
-    demo: "",
-    details: {
-      context: "Site e-commerce compagnon du site pro, pour la vente aux particuliers.",
-      features: [
-        "Catalogue produits avec catégories et filtres",
-        "Panier et tunnel de commande",
-        "Paiement en ligne sécurisé",
-        "Gestion des commandes et stocks",
-      ],
-      role: "Développeur web — mise en place WooCommerce, personnalisation Divi.",
-    },
-  },
-  {
-    slug: "cda-avocats",
-    title: "CDA Avocats",
-    subtitle: "Site vitrine cabinet d'avocats",
-    category: "stage",
-    description: "Site professionnel pour un cabinet d'avocats. Présentation de l'équipe, domaines d'expertise, prise de rendez-vous.",
-    tech: ["WordPress", "Elementor", "CSS"],
-    image: "/projects/photo-pc.webp",
-    repo: "",
-    demo: "",
-    details: {
-      context: "Réalisé lors du stage chez Allographique.",
-      features: [
-        "Design professionnel et rassurant",
-        "Présentation des avocats et spécialités",
-        "Formulaire de prise de rendez-vous",
-        "Responsive design",
-      ],
-      role: "Développeur web — conception et intégration sous WordPress/Elementor.",
-    },
-  },
-  {
-    slug: "dbconsult",
-    title: "DbConsult",
-    subtitle: "Site vitrine consulting",
-    category: "stage",
-    description: "Site vitrine pour une société de conseil. Présentation des services, témoignages clients.",
-    tech: ["WordPress", "Elementor", "CSS"],
-    image: "/projects/dbconsult.webp",
-    repo: "",
-    demo: "",
-    details: {
-      context: "Réalisé lors du stage chez Allographique.",
-      features: [
-        "Présentation des services de consulting",
-        "Témoignages clients",
-        "Design corporate responsive",
-      ],
-      role: "Développeur web — intégration WordPress/Elementor.",
-    },
-  },
-  {
-    slug: "assaini-concept",
-    title: "AssainiConcept",
-    subtitle: "Site vitrine assainissement",
-    category: "stage",
-    description: "Site vitrine pour une entreprise spécialisée en assainissement. Services, zone d'intervention, devis en ligne.",
-    tech: ["WordPress", "Divi", "CSS"],
-    image: "/projects/AssainiConcept.webp",
-    repo: "",
-    demo: "",
-    details: {
-      context: "Réalisé lors du stage chez Diggit-All.",
-      features: [
-        "Présentation des services d'assainissement",
-        "Zone d'intervention interactive",
-        "Formulaire de demande de devis",
-      ],
-      role: "Développeur web — intégration WordPress/Divi.",
-    },
-  },
-  {
-    slug: "diggit-all",
-    title: "Diggit All",
-    subtitle: "Site agence web",
-    category: "stage",
-    description: "Site vitrine pour l'agence digitale Diggit-All. Portfolio de réalisations, services proposés.",
-    tech: ["WordPress", "Divi", "CSS"],
-    image: "/projects/diggitall.webp",
-    repo: "",
-    demo: "",
-    details: {
-      context: "Réalisé lors du stage chez Diggit-All pour refondre leur propre site.",
-      features: [
-        "Portfolio des réalisations de l'agence",
-        "Présentation des services",
-        "Design moderne et dynamique",
-      ],
-      role: "Développeur web — refonte complète sous WordPress/Divi.",
-    },
-  },
 ];
 
 export const certifications = [
@@ -308,7 +235,6 @@ export const certifications = [
 
 export const projectCategories = [
   { value: "all", label: "Tous" },
-  { value: "stage", label: "Stages" },
   { value: "etude", label: "Projets d'étude" },
   { value: "personnel", label: "Projets perso" },
 ];

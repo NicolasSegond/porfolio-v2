@@ -54,7 +54,7 @@ export function ContactApp() {
             </div>
             <div className="min-w-0">
               <p className="text-[13px] font-medium text-white/70">GitHub</p>
-              <p className="text-[11px] text-white/25">TurboNicoo</p>
+              <p className="text-[11px] text-white/25">NicolasSegond</p>
             </div>
           </a>
           <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-3 py-3 hover:bg-white/[0.03] transition-colors">

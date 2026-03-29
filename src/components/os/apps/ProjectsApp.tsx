@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { Lock, Plus, CheckCircle2, ChevronLeft, ChevronRight, RotateCw, Globe, ExternalLink, Code2, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { projects, projectCategories } from "@/data/portfolio";
@@ -45,7 +45,7 @@ export function ProjectsApp() {
         <button className="p-1 text-white/20 hover:text-white/40"><Plus size={13} /></button>
       </div>
       {/* URL bar */}
-      <div className="flex items-center gap-2 px-3 py-[5px] bg-[#232336] border-b border-white/[0.06] shrink-0">
+      <div className="flex items-center gap-2 px-3 py-[5px] bg-[#232336] border-b border-white/[0.06] shrink-0 relative z-10">
         <button onClick={() => selected && setSelected(null)} className={`p-1 rounded-md ${selected ? "text-white/50 hover:bg-white/[0.06]" : "text-white/15"} transition-all`}>
           <ChevronLeft size={16} strokeWidth={2.5} />
         </button>
