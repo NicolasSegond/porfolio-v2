@@ -91,7 +91,7 @@ export function GitHubStats() {
         <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25 mb-3">Contributions</p>
         <div className="overflow-x-auto rounded-lg max-w-[700px] mx-auto">
           <img
-            src={`https://ghchart.rshah.org/7C3AED/${username}`}
+            src={`https://github-contributions-api.jogruber.de/v4/${username}?scheme=purple`}
             alt="GitHub contributions"
             className="w-full min-w-[640px] rounded-lg opacity-85"
           />
