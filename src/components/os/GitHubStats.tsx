@@ -14,6 +14,44 @@ const langColors: Record<string, string> = {
   Swift: "#F05138", Kotlin: "#A97BFF", Shell: "#89E051", CMake: "#DA3434",
 };
 
+function ContributionGraph({ username }: { username: string }) {
+  const [svg, setSvg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`https://github-contributions-api.jogruber.de/v4/${username}?scheme=purple`, { signal: controller.signal })
+      .then((r) => r.ok ? r.text() : null)
+      .then((text) => {
+        if (text) setSvg(text);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [username]);
+
+  return (
+    <div>
+      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25 mb-3">Contributions</p>
+      <div className="overflow-x-auto rounded-lg max-w-[700px] mx-auto">
+        {svg ? (
+          <div
+            className="w-full min-w-[640px] rounded-lg opacity-85 [&_text]:!fill-white/40 [&_rect]:rounded-[2px]"
+            dangerouslySetInnerHTML={{ __html: svg }}
+          />
+        ) : (
+          <div className="h-24 flex items-center justify-center text-white/20 text-xs">Chargement...</div>
+        )}
+      </div>
+      <div className="flex items-center justify-end gap-2 mt-3">
+        <span className="text-[11px] text-white/40">Moins</span>
+        {["#3d3d50", "#4a2d7a", "#7C3AED", "#a855f7", "#d8b4fe"].map((c) => (
+          <div key={c} className="w-3 h-3 rounded-[3px] border border-white/[0.06]" style={{ background: c }} />
+        ))}
+        <span className="text-[11px] text-white/40">Plus</span>
+      </div>
+    </div>
+  );
+}
+
 export function GitHubStats() {
   const [stats, setStats] = useState<Stats>(null);
 
@@ -87,23 +125,7 @@ export function GitHubStats() {
         </div>
       </div>
 
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25 mb-3">Contributions</p>
-        <div className="overflow-x-auto rounded-lg max-w-[700px] mx-auto">
-          <img
-            src={`https://github-contributions-api.jogruber.de/v4/${username}?scheme=purple`}
-            alt="GitHub contributions"
-            className="w-full min-w-[640px] rounded-lg opacity-85"
-          />
-        </div>
-        <div className="flex items-center justify-end gap-2 mt-3">
-          <span className="text-[11px] text-white/40">Moins</span>
-          {["#3d3d50", "#4a2d7a", "#7C3AED", "#a855f7", "#d8b4fe"].map((c) => (
-            <div key={c} className="w-3 h-3 rounded-[3px] border border-white/[0.06]" style={{ background: c }} />
-          ))}
-          <span className="text-[11px] text-white/40">Plus</span>
-        </div>
-      </div>
+      <ContributionGraph username={username} />
     </div>
   );
 }
