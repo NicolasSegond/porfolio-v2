@@ -253,10 +253,10 @@ export function Dock({ openApps, onOpen, isMobile, activeApp }: { openApps: AppI
       initial={{ y: 80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.15, type: "spring", damping: 24, stiffness: 200 }}
-      className="fixed bottom-[4px] left-1/2 -translate-x-1/2 z-[200]"
+      className="fixed bottom-[4px] left-1/2 -translate-x-1/2 z-[200] pointer-events-none"
     >
       <div
-        className="flex items-end"
+        className="flex items-end pointer-events-auto"
         style={{
           padding: "6px 12px",
           gap: "4px",

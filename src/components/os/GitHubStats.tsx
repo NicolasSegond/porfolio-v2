@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { personalInfo } from "@/data/portfolio";
+import { ActivityCalendar, type Activity } from "react-activity-calendar";
 
-type Stats = { publicRepos: number; totalStars: number; topLangs: { name: string; count: number; pct: number }[] } | null;
+type Stats = { publicRepos: number; totalStars: number; topLangs: { name: string; count: number; pct: number }[] };
+type GHData = { stats: Stats; contributions: Activity[]; totalContributions: number };
 
 const username = personalInfo.github.replace("https://github.com/", "");
 
@@ -14,69 +16,20 @@ const langColors: Record<string, string> = {
   Swift: "#F05138", Kotlin: "#A97BFF", Shell: "#89E051", CMake: "#DA3434",
 };
 
-function ContributionGraph({ username }: { username: string }) {
-  const [svg, setSvg] = useState<string | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(`https://github-contributions-api.jogruber.de/v4/${username}?scheme=purple`, { signal: controller.signal })
-      .then((r) => r.ok ? r.text() : null)
-      .then((text) => {
-        if (text) setSvg(text);
-      })
-      .catch(() => {});
-    return () => controller.abort();
-  }, [username]);
-
-  return (
-    <div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25 mb-3">Contributions</p>
-      <div className="overflow-x-auto rounded-lg max-w-[700px] mx-auto">
-        {svg ? (
-          <div
-            className="w-full min-w-[640px] rounded-lg opacity-85 [&_text]:!fill-white/40 [&_rect]:rounded-[2px]"
-            dangerouslySetInnerHTML={{ __html: svg }}
-          />
-        ) : (
-          <div className="h-24 flex items-center justify-center text-white/20 text-xs">Chargement...</div>
-        )}
-      </div>
-      <div className="flex items-center justify-end gap-2 mt-3">
-        <span className="text-[11px] text-white/40">Moins</span>
-        {["#3d3d50", "#4a2d7a", "#7C3AED", "#a855f7", "#d8b4fe"].map((c) => (
-          <div key={c} className="w-3 h-3 rounded-[3px] border border-white/[0.06]" style={{ background: c }} />
-        ))}
-        <span className="text-[11px] text-white/40">Plus</span>
-      </div>
-    </div>
-  );
-}
-
 export function GitHubStats() {
-  const [stats, setStats] = useState<Stats>(null);
+  const [data, setData] = useState<GHData | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
-    (async () => {
-      try {
-        const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`, { signal: controller.signal });
-        if (!res.ok) return;
-        const repos = await res.json();
-        const totalStars = repos.reduce((sum: number, r: any) => sum + (r.stargazers_count || 0), 0);
-        const langMap: Record<string, number> = {};
-        repos.forEach((r: any) => { if (r.language) langMap[r.language] = (langMap[r.language] || 0) + 1; });
-        const total = Object.values(langMap).reduce((a, b) => a + b, 0);
-        const topLangs = Object.entries(langMap)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 6)
-          .map(([name, count]) => ({ name, count, pct: Math.round((count / total) * 100) }));
-        setStats({ publicRepos: repos.length, totalStars, topLangs });
-      } catch {}
-    })();
+    fetch("/api/github", { signal: controller.signal })
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d) setData(d); })
+      .catch(() => {});
     return () => controller.abort();
   }, []);
 
-  if (!stats) return null;
+  const stats = data?.stats;
+  const activities = data?.contributions;
 
   return (
     <div className="bg-white/[0.03] rounded-xl border border-white/[0.06] p-5 mt-4">
@@ -86,46 +39,92 @@ export function GitHubStats() {
         <span className="text-[10px] text-white/20 ml-auto">@{username}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="bg-white/[0.04] rounded-xl p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#7C3AED]/15 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#7C3AED" strokeWidth="1.5" strokeLinecap="round"><path d="M6 3v10M10 3v10M2 6h12M2 10h12"/></svg>
-          </div>
-          <div>
-            <p className="text-2xl font-black text-white leading-none">{stats.publicRepos}</p>
-            <p className="text-[10px] text-white/30 mt-0.5">Repositories</p>
-          </div>
-        </div>
-        <div className="bg-white/[0.04] rounded-xl p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#EAB308]/15 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="#EAB308"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
-          </div>
-          <div>
-            <p className="text-2xl font-black text-white leading-none">{stats.totalStars}</p>
-            <p className="text-[10px] text-white/30 mt-0.5">Stars</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25 mb-3">Langages utilisés</p>
-        <div className="h-2 rounded-full overflow-hidden flex mb-2.5">
-          {stats.topLangs.map((l) => (
-            <div key={l.name} className="h-full transition-all" style={{ width: `${l.pct}%`, background: langColors[l.name] || "#6b6b80" }} />
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1">
-          {stats.topLangs.map((l) => (
-            <div key={l.name} className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full" style={{ background: langColors[l.name] || "#6b6b80" }} />
-              <span className="text-[11px] text-white/50">{l.name}</span>
-              <span className="text-[10px] text-white/20">{l.pct}%</span>
+      {stats && (
+        <>
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="bg-white/[0.04] rounded-xl p-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#7C3AED]/15 flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#7C3AED" strokeWidth="1.5" strokeLinecap="round"><path d="M6 3v10M10 3v10M2 6h12M2 10h12"/></svg>
+              </div>
+              <div>
+                <p className="text-2xl font-black text-white leading-none">{stats.publicRepos}</p>
+                <p className="text-[10px] text-white/30 mt-0.5">Repositories</p>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="bg-white/[0.04] rounded-xl p-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#EAB308]/15 flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="#EAB308"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
+              </div>
+              <div>
+                <p className="text-2xl font-black text-white leading-none">{stats.totalStars}</p>
+                <p className="text-[10px] text-white/30 mt-0.5">Stars</p>
+              </div>
+            </div>
+          </div>
 
-      <ContributionGraph username={username} />
+          <div className="mb-5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25 mb-3">Langages utilisés</p>
+            <div className="h-2 rounded-full overflow-hidden flex mb-2.5">
+              {stats.topLangs.map((l) => (
+                <div key={l.name} className="h-full transition-all" style={{ width: `${l.pct}%`, background: langColors[l.name] || "#6b6b80" }} />
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              {stats.topLangs.map((l) => (
+                <div key={l.name} className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full" style={{ background: langColors[l.name] || "#6b6b80" }} />
+                  <span className="text-[11px] text-white/50">{l.name}</span>
+                  <span className="text-[10px] text-white/20">{l.pct}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {activities ? (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25">Contributions</p>
+            <p className="text-[10px] text-white/30">{data?.totalContributions} contributions cette année</p>
+          </div>
+          <ActivityCalendar
+            data={activities}
+            theme={{ dark: ["#1a1a2e", "#4a2d7a", "#7C3AED", "#a855f7", "#d8b4fe"] }}
+            colorScheme="dark"
+            blockSize={11}
+            blockRadius={2}
+            blockMargin={3}
+            fontSize={11}
+            hideColorLegend
+            renderBlock={(block, activity) => (
+              <g>
+                {React.cloneElement(block, {
+                  style: { ...block.props.style, cursor: "pointer" },
+                })}
+                <title>{`${activity.count} contribution${activity.count !== 1 ? "s" : ""} le ${activity.date}`}</title>
+              </g>
+            )}
+            labels={{
+              months: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"],
+              weekdays: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+              totalCount: "{{count}} contributions cette année",
+            }}
+          />
+          <div className="flex items-center justify-end gap-1.5 mt-3">
+            <span className="text-[10px] text-white/40">Moins</span>
+            {["#1a1a2e", "#4a2d7a", "#7C3AED", "#a855f7", "#d8b4fe"].map((c) => (
+              <div key={c} className="w-[10px] h-[10px] rounded-[2px]" style={{ background: c }} />
+            ))}
+            <span className="text-[10px] text-white/40">Plus</span>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25 mb-3">Contributions</p>
+          <div className="h-24 flex items-center justify-center text-white/20 text-xs">Chargement...</div>
+        </div>
+      )}
     </div>
   );
 }

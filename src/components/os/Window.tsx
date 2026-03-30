@@ -5,13 +5,13 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import { MOBILE_TAB_BAR_H } from "./Dock";
 
 const MENUBAR_H = 25;
+const DOCK_H = 90;
 
 type Props = {
   id: string;
   title: string;
   icon: React.ReactNode;
   children: React.ReactNode;
-  defaultPos?: { x: number; y: number };
   defaultSize?: { w: number; h: number };
   zIndex: number;
   onFocus: () => void;
@@ -25,7 +25,6 @@ export function Window({
   title,
   icon,
   children,
-  defaultPos = { x: 100, y: 60 },
   defaultSize = { w: 700, h: 500 },
   zIndex,
   onFocus,
@@ -35,7 +34,16 @@ export function Window({
 }: Props) {
   const [maximized, setMaximized] = useState(false);
   const [size, setSize] = useState(defaultSize);
-  const [pos, setPos] = useState({ x: defaultPos.x, y: defaultPos.y + MENUBAR_H });
+  const [pos, setPos] = useState({ x: 0, y: MENUBAR_H });
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    const x = Math.max(0, (window.innerWidth - defaultSize.w) / 2);
+    const y = Math.max(MENUBAR_H, (window.innerHeight - defaultSize.h) / 2);
+    setPos({ x, y });
+  }, []);
   const dragStart = useRef({ mx: 0, my: 0, px: 0, py: 0 });
   const resizeStart = useRef({ mx: 0, my: 0, w: 0, h: 0 });
   const [isMobile, setIsMobile] = useState(false);
@@ -62,20 +70,37 @@ export function Window({
       e.preventDefault();
       dragStart.current = { mx: e.clientX, my: e.clientY, px: pos.x, py: pos.y };
       const el = (e.target as HTMLElement).closest("[data-window]") as HTMLElement;
+      const curW = size.w;
+      const clamp = (rawX: number, rawY: number) => {
+        const minVis = 100;
+        return {
+          x: Math.max(-curW + minVis, Math.min(rawX, window.innerWidth - minVis)),
+          y: Math.max(MENUBAR_H, Math.min(rawY, window.innerHeight - 40)),
+        };
+      };
       const onMove = (ev: PointerEvent) => {
         if (!el) return;
-        el.style.left = `${dragStart.current.px + (ev.clientX - dragStart.current.mx)}px`;
-        el.style.top = `${Math.max(MENUBAR_H, dragStart.current.py + (ev.clientY - dragStart.current.my))}px`;
+        const { x, y } = clamp(
+          dragStart.current.px + (ev.clientX - dragStart.current.mx),
+          dragStart.current.py + (ev.clientY - dragStart.current.my),
+        );
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
       };
       const onUp = (ev: PointerEvent) => {
-        setPos({ x: dragStart.current.px + (ev.clientX - dragStart.current.mx), y: Math.max(MENUBAR_H, dragStart.current.py + (ev.clientY - dragStart.current.my)) });
+        const clamped = clamp(
+          dragStart.current.px + (ev.clientX - dragStart.current.mx),
+          dragStart.current.py + (ev.clientY - dragStart.current.my),
+        );
+        setPos(clamped);
+        if (el) { el.style.left = `${clamped.x}px`; el.style.top = `${clamped.y}px`; }
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("pointerup", onUp);
       };
       window.addEventListener("pointermove", onMove);
       window.addEventListener("pointerup", onUp);
     },
-    [maximized, pos]
+    [maximized, pos, size]
   );
 
   const onEdgeResize = useCallback(
@@ -84,28 +109,28 @@ export function Window({
       e.stopPropagation();
       const start = { mx: e.clientX, my: e.clientY, w: size.w, h: size.h, x: pos.x, y: pos.y };
       const el = (e.target as HTMLElement).closest("[data-window]") as HTMLElement;
-      const onMove = (ev: PointerEvent) => {
-        if (!el) return;
+      const calc = (ev: { clientX: number; clientY: number }) => {
         const dx = ev.clientX - start.mx;
         const dy = ev.clientY - start.my;
         let newW = start.w, newH = start.h, newX = start.x, newY = start.y;
         if (edges.right) newW = Math.max(520, start.w + dx);
-        if (edges.bottom) newH = Math.max(380, start.h + dy);
+        if (edges.bottom) {
+          newH = Math.max(380, start.h + dy);
+        }
         if (edges.left) { newW = Math.max(520, start.w - dx); newX = start.x + start.w - newW; }
         if (edges.top) { newH = Math.max(380, start.h - dy); newY = Math.max(MENUBAR_H, start.y + start.h - newH); }
+        return { newW, newH, newX, newY };
+      };
+      const onMove = (ev: PointerEvent) => {
+        if (!el) return;
+        const { newW, newH, newX, newY } = calc(ev);
         el.style.width = `${newW}px`;
         el.style.height = `${newH}px`;
         el.style.left = `${newX}px`;
         el.style.top = `${newY}px`;
       };
       const onUp = (ev: PointerEvent) => {
-        const dx = ev.clientX - start.mx;
-        const dy = ev.clientY - start.my;
-        let newW = start.w, newH = start.h, newX = start.x, newY = start.y;
-        if (edges.right) newW = Math.max(520, start.w + dx);
-        if (edges.bottom) newH = Math.max(380, start.h + dy);
-        if (edges.left) { newW = Math.max(520, start.w - dx); newX = start.x + start.w - newW; }
-        if (edges.top) { newH = Math.max(380, start.h - dy); newY = Math.max(MENUBAR_H, start.y + start.h - newH); }
+        const { newW, newH, newX, newY } = calc(ev);
         setSize({ w: newW, h: newH });
         setPos({ x: newX, y: newY });
         window.removeEventListener("pointermove", onMove);

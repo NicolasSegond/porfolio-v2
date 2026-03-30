@@ -21,15 +21,14 @@ const appConfig: Record<AppId, {
   title: string;
   icon: React.ReactNode;
   component: React.ReactNode;
-  defaultPos: { x: number; y: number };
   defaultSize: { w: number; h: number };
 }> = {
-  profil: { title: "Finder — Nicolas Segond", icon: <User size={11} />, component: <ProfileApp />, defaultPos: { x: 60, y: 10 }, defaultSize: { w: 900, h: 560 } },
-  projets: { title: "Safari — Projets", icon: <FolderGit2 size={11} />, component: <ProjectsApp />, defaultPos: { x: 80, y: 10 }, defaultSize: { w: 1000, h: 600 } },
-  parcours: { title: "Notes — Parcours", icon: <Briefcase size={11} />, component: <ParcoursApp />, defaultPos: { x: 70, y: 10 }, defaultSize: { w: 950, h: 560 } },
-  terminal: { title: "Terminal — nicolas@portfolio", icon: <Terminal size={11} />, component: <TerminalApp />, defaultPos: { x: 90, y: 10 }, defaultSize: { w: 960, h: 580 } },
-  certifs: { title: "Photos — Certifications", icon: <Award size={11} />, component: <CertifsApp />, defaultPos: { x: 100, y: 10 }, defaultSize: { w: 880, h: 540 } },
-  contact: { title: "Messages — Contact", icon: <Mail size={11} />, component: <ContactApp />, defaultPos: { x: 80, y: 10 }, defaultSize: { w: 940, h: 560 } },
+  profil: { title: "Finder — Nicolas Segond", icon: <User size={11} />, component: <ProfileApp />, defaultSize: { w: 1050, h: 560 } },
+  projets: { title: "Safari — Projets", icon: <FolderGit2 size={11} />, component: <ProjectsApp />, defaultSize: { w: 1100, h: 600 } },
+  parcours: { title: "Notes — Parcours", icon: <Briefcase size={11} />, component: <ParcoursApp />, defaultSize: { w: 1080, h: 560 } },
+  terminal: { title: "Terminal — nicolas@portfolio", icon: <Terminal size={11} />, component: <TerminalApp />, defaultSize: { w: 1080, h: 580 } },
+  certifs: { title: "Photos — Certifications", icon: <Award size={11} />, component: <CertifsApp />, defaultSize: { w: 1050, h: 540 } },
+  contact: { title: "Messages — Contact", icon: <Mail size={11} />, component: <ContactApp />, defaultSize: { w: 1080, h: 560 } },
 };
 
 export function Desktop() {
@@ -118,7 +117,6 @@ export function Desktop() {
               id={w.id}
               title={cfg.title}
               icon={cfg.icon}
-              defaultPos={cfg.defaultPos}
               defaultSize={cfg.defaultSize}
               zIndex={w.zIndex}
               onFocus={() => focusApp(w.id)}
@@ -140,7 +138,7 @@ export function Desktop() {
           animate={{ y: anyMaximized ? 100 : 0, opacity: anyMaximized ? 0 : 1 }}
           whileHover={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed bottom-0 left-0 right-0 h-[80px] flex items-end justify-center z-[200]"
+          className="fixed bottom-0 left-0 right-0 h-[80px] flex items-end justify-center z-[200] pointer-events-none"
         >
           <Dock openApps={visibleApps.map((w) => w.id)} onOpen={openApp} />
         </motion.div>
