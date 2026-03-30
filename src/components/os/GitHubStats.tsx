@@ -96,7 +96,7 @@ export function GitHubStats() {
             blockRadius={2}
             blockMargin={3}
             fontSize={11}
-            renderColorLegend={() => null}
+            renderColorLegend={() => <></>}
             renderBlock={(block, activity) => (
               <g>
                 {React.cloneElement(block, {
